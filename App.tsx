@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import Hero from './components/Hero';
-import About from './components/About';
-import Projects from './components/Projects';
-import Contact from './components/Contact';
+import Header from './components/Header.tsx';
+import Hero from './components/Hero.tsx';
+import About from './components/About.tsx';
+import Projects from './components/Projects.tsx';
+import Contact from './components/Contact.tsx';
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -31,7 +31,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <Header activeSection={activeSection} />
       <main className="fade-in">
         <section id="home">

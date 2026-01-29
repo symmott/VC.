@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ProjectData } from '../types';
+import { ProjectData } from '../types.ts';
 
 interface ProjectCardProps {
   project: ProjectData;
@@ -15,9 +15,27 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
   const getStorageKey = (slot: string) => `vc-portfolio-p${project.id}-${slot}`;
 
   // 개별 슬롯별 로컬 상태 관리 - 초기값으로 localStorage 확인
-  const [localCover, setLocalCover] = useState<string | null>(() => localStorage.getItem(getStorageKey('cover')));
-  const [localDoc1, setLocalDoc1] = useState<string | null>(() => localStorage.getItem(getStorageKey('doc1')));
-  const [localDoc2, setLocalDoc2] = useState<string | null>(() => localStorage.getItem(getStorageKey('doc2')));
+  const [localCover, setLocalCover] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(getStorageKey('cover'));
+    } catch (e) {
+      return null;
+    }
+  });
+  const [localDoc1, setLocalDoc1] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(getStorageKey('doc1'));
+    } catch (e) {
+      return null;
+    }
+  });
+  const [localDoc2, setLocalDoc2] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(getStorageKey('doc2'));
+    } catch (e) {
+      return null;
+    }
+  });
   
   const coverInputRef = useRef<HTMLInputElement>(null);
   const doc1InputRef = useRef<HTMLInputElement>(null);
@@ -43,8 +61,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
       reader.onloadend = () => {
         const result = reader.result as string;
         setter(result);
-        // 브라우저 로컬 저장소에 저장 (영구 유지)
-        localStorage.setItem(getStorageKey(slot), result);
+        try {
+          localStorage.setItem(getStorageKey(slot), result);
+        } catch (err) {
+          console.warn("Storage limit exceeded or unavailable", err);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -60,7 +81,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
       {/* 이미지 확대 모달 (라이트박스) */}
       {zoomImage && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 md:p-10 cursor-zoom-out animate-fade-in"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 md:p-10 cursor-zoom-out"
           onClick={() => setZoomImage(null)}
         >
           <button 
@@ -220,7 +241,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index }) => {
           <div className="space-y-8 pt-12 border-t border-gray-100">
              <div className="flex items-center justify-between">
                 <h5 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mono">Process & Additional Assets</h5>
-                <span className="text-[9px] mono text-gray-300 italic">클릭하여 확대하거나 이미지를 업로드하세요. (이미지는 브라우저에 저장됩니다)</span>
+                <span className="text-[9px] mono text-gray-300 italic">클릭하여 확대하거나 이미지를 업로드하세요.</span>
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
